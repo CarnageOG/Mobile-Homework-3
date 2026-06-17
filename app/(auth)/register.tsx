@@ -1,35 +1,36 @@
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Link, useRouter } from "expo-router";
 import { useState } from "react";
 import { StyleSheet, View } from "react-native";
 import AppButton from "../components/appButton/AppButton";
 import AppInput from "../components/appInput/AppInput";
 
-const Login = () => {
+const Register = () => {
   const router = useRouter();
 
-  const [username, setUsername] = useState<string>("johnd");
-  const [password, setPassword] = useState<string>("m38rmF$");
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
 
-  const handleSubmit = async () => {
+  const handleRegister = async () => {
+    if (password !== confirmPassword) {
+      return;
+    }
+
     try {
-      const response = await fetch("https://fakestoreapi.com/auth/login", {
+      const response = await fetch("https://fakestoreapi.com/users", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ username, password }),
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          username,
+          password,
+        }),
       });
 
       const result = await response.json();
-
-      if (result?.token) {
-        const userResponse = await fetch("https://fakestoreapi.com/users/1");
-        const user = await userResponse.json();
-        await AsyncStorage.setItem(
-          "user",
-          JSON.stringify({ token: result.token, data: user }),
-        );
-        router.replace("/(tabs)");
-      }
+      console.log(result);
+      router.replace("/(auth)/login");
     } catch (error) {
       console.log(error);
     }
@@ -50,20 +51,28 @@ const Login = () => {
         secureTextEntry
       />
 
-      <AppButton
-        title="Log In"
-        handlePress={handleSubmit}
-        hitSlop={20}
-        disabled={!username || !password}
+      <AppInput
+        placeholder="confirm password"
+        value={confirmPassword}
+        onChangeText={setConfirmPassword}
+        secureTextEntry
       />
-      <Link style={styles.link} href={"/(auth)/register"}>
-        Don't have an account? Register
+
+      <AppButton
+        title="Register"
+        handlePress={handleRegister}
+        hitSlop={20}
+        disabled={!username || !password || !confirmPassword}
+      />
+
+      <Link style={styles.link} href={"/(auth)/login"}>
+        Already have an account? Log In
       </Link>
     </View>
   );
 };
 
-export default Login;
+export default Register;
 
 const styles = StyleSheet.create({
   container: {
@@ -71,6 +80,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#F5F5F5",
     padding: 20,
   },
+
   link: {
     marginTop: 20,
     alignSelf: "center",

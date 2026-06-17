@@ -21,6 +21,11 @@ const _layout = () => {
           headerBackVisible: false,
         }}
       />
+
+      <Stack.Screen
+        name="register"
+        options={{ headerShown: true, headerTitle: "Register" }}
+      />
     </Stack>
   );
 };

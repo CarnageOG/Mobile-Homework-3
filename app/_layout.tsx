@@ -41,7 +41,17 @@ export default function RootLayout() {
 
   return (
     <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
-      <Stack>
+      <Stack
+        screenOptions={{
+          headerStyle: {
+            backgroundColor: "#FFFFFF",
+          },
+          headerTintColor: "#000000",
+          headerTitleStyle: {
+            color: "#000000",
+          },
+        }}
+      >
         <Stack.Screen
           name="(auth)"
           options={{ headerShown: false, title: "AUTH" }}
