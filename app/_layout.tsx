@@ -5,39 +5,29 @@ import {
   DefaultTheme,
   ThemeProvider,
 } from "@react-navigation/native";
-import { Stack, useRouter } from "expo-router";
+import { Stack, useRouter, useSegments } from "expo-router";
 import { StatusBar } from "expo-status-bar";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import "react-native-reanimated";
 
 export default function RootLayout() {
   const colorScheme = useColorScheme();
-
   const router = useRouter();
-  const [loading, setLoading] = useState<boolean>(true);
-
-  const checkUser = async () => {
-    try {
-      const result = await AsyncStorage.getItem("user");
-      if (!result) return;
-      const user = JSON.parse(result);
-      if (user) {
-        router.replace("/(tabs)");
-      } else {
-        router.replace("/(auth)/login");
-      }
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setLoading(false);
-    }
-  };
+  const segments = useSegments();
 
   useEffect(() => {
-    checkUser();
-  }, []);
-
-  if (loading) return;
+    const verifyUser = async () => {
+      const user = await AsyncStorage.getItem("user");
+      const inAuth = segments[0] === "(auth)";
+      if (!user && !inAuth) {
+        router.replace("/(auth)/login");
+      }
+      if (user && inAuth) {
+        router.replace("/(tabs)");
+      }
+    };
+    verifyUser();
+  }, [segments]);
 
   return (
     <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>

@@ -44,7 +44,7 @@ export default function TabTwoScreen() {
         </View>
       )}
 
-      <AppButton title="logout" handlePress={handleLougOut} />
+      <AppButton title="Logout" handlePress={handleLougOut} />
     </View>
   );
 }
